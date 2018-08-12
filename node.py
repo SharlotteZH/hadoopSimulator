@@ -26,7 +26,7 @@ class Node:
 		# Progress the execution of the tasks in this node
 		# Maps
 		for mapAttempt in list(self.maps):
-			mapAttempt.progress(1)
+			mapAttempt.progress(p)
 			# Check if the map is completed
 			if mapAttempt.isCompleted():
 				self.maps.remove(mapAttempt)
@@ -35,7 +35,7 @@ class Node:
 		for redAttempt in list(self.reds):
 			# Check if the maps of this node are completed
 			if redAttempt.getJob().isMapCompleted():
-				redAttempt.progress(1)
+				redAttempt.progress(p)
 			# Check if the reduce is completed
 			if redAttempt.isCompleted():
 				self.reds.remove(redAttempt)

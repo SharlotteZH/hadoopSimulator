@@ -87,7 +87,7 @@ class Task:
 			self.nattempts += 1
 			attemptId = (self.taskId+'_%d' % self.nattempts).replace('task_', 'attempt_')
 			seconds = self.length
-			if self.gauss != None:
+			if self.gauss != None: #random.gauss(mu, sigma) mean  standard deviation
 				seconds = int(random.gauss(seconds, self.gauss/100.0*seconds))
 				# Minimum task length
 				if seconds < 3:
@@ -153,7 +153,6 @@ class Job:
 
 	def initTasks(self):
 		# Maps
-		numMapPrecis = self.nmaps
 		# Initialize tasks
 		for nmap in range(0, self.nmaps):
 			taskId = '%s_m_%06d' % (self.jobId.replace('job_', 'task_'), nmap+1)
@@ -161,7 +160,6 @@ class Job:
 			self.maps[taskId].gauss = self.gauss
 
 		# Reduces
-		numRedPrecis = self.nreds
 		# Initialize tasks
 		for nred in range(0, self.nreds):
 			taskId = '%s_r_%06d' % (self.jobId.replace('job_', 'task_'), nred+1)

@@ -17,14 +17,13 @@ from history import HistoryViewer
 import sys
 from datetime import datetime
 
-'''
-Simulator. Author: Inigo, Cheng
-'''
+
+
 class Simulator(SchedulerPolicy):
 	def __init__(self, logfile='history.log'):
 		# Initialize the scheduler
 		SchedulerPolicy.__init__(self) # super()
-
+           #default: self.schedType = SchedulerPolicy.Type.FIFOPR
 		self.t = 0
 		# Nodes
 		self.nodes = {}
@@ -63,7 +62,7 @@ class Simulator(SchedulerPolicy):
 		self.jobs[job.jobId] = job
 		self.jobsQueue.append(job.jobId)
 
-		# Sort the queue according to submission order
+		# Sort the queue according to submission order/FIFOPR
 		self.jobsQueue = sorted(self.jobsQueue, cmp=self.schedulingPolicy)
 
 		return job.jobId

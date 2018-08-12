@@ -73,8 +73,9 @@ if __name__ == "__main__":
 	parser.add_option('-m',"--manage",action="store_true",dest="manage",default=False,help="manage node disabled by default")
 
 	parser.add_option('-s', "--sjf",                        dest="sjf",       type="float",  default=0.0,   help="specify the percentage of newly submitted job using SJF scheduling")
-	parser.add_option('-w', "--weight",                        dest="weight",       type="string",  default="",   help="specify the detailed cheduling weight [X%:Y]")
+	parser.add_option('-w', "--weight",                     dest="weight",       type="string",  default="",   help="specify the detailed cheduling weight [X%:Y]")
 	parser.add_option('-f', "--infile",                     dest="infile",    type="string", default="",    help="workload file")
+      parser.add_option('-sp', "--schedulingPolicy",                     dest="schedulingPolicy",    type="int", default=2,    help="SJF=0, FIFO=1, FIFOPR = 2")
 
 
 	(options, args) = parser.parse_args()
@@ -82,9 +83,10 @@ if __name__ == "__main__":
 	options.og = None
 	# Initialize simulator
 	simulator = Simulator(logfile=options.log)
+      simulator.schedulingPolicy = options.schedulingPolicy
 	# Add servers
 	for i in range(0, options.nodes):
-		simulator.nodes['aws%03d' % i] = Node('aws%03d' % i)
+		simulator.nodes['aws%03d' % i] = Node('aws%03d' % i) 
 		simulator.nodes['aws%03d' % i].numMaps = options.mapslot
 		simulator.nodes['aws%03d' % i].redMaps = options.redslot
 
@@ -93,17 +95,17 @@ if __name__ == "__main__":
 	#unit_test()
 
 	# Add jobs
-	if len(options.infile) > 0:
-		simulator.nodeManagement = options.manage
-		manager = WorkloadManager(options.infile)
+	if len(options.infile) > 0: #wl
+		simulator.nodeManagement = options.manage #disabled do not need to consider reboot
+		manager = WorkloadManager(options.infile) #line by line 
 		weights = {}
-		weights = parseSchedule(options.weight)
-		for job in manager.getJobs():
+		weights = parseSchedule(options.weight) #advanced e.g. 25% short job first 75% FIFO
+		for job in manager.getJobs():#based on arrival time
 			if len(weights)>0:
 				job.priority=getProbBySchedule(weights, job.nreds)
 			else:
 				job.priority=getProbabilisticSJF(job.nreds, options.sjf)
-			simulator.addJob(job)
+			simulator.addJob(job) #queue
 	else:
 		# Submit jobs
 		for i in range(0, options.jobs):
